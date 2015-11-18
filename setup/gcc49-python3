@@ -42,7 +42,7 @@ $PORT install cmake gmake
 # ---------- Libraries (for compiling Glint2 and PISM)
 $PORT install blitz +gcc49
 $PORT install hdf5 +fortran +gcc49 +openmpi +cxx
-#$PORT install netcdf-cxx +gcc49 +openmpi      # We have our customized version of this one for everytrace
+$PORT install netcdf-cxx +gcc49 +openmpi      # We have our customized version of this one for everytrace
 $PORT install netcdf-cxx4 +gcc49 +openmpi
 $PORT install netcdf-fortran +gcc49 +openmpi
 $PORT install proj udunits2 gsl
@@ -57,8 +57,10 @@ $PORT install gtk3 +introspection +x11	# +introspection needed for MatPlotLib
 # ----------- Python Stuff
 $PORT install py34-netcdf4
 #$PORT install py34-tkinter
-$PORT install py34-ipython
-$PORT select --set ipython ipython34
+$PORT install py34-ipython    # Installs numpy too...
+$PORT select --set ipython py34-ipython
+$PORT select --set ipython3 py34-ipython
+
 $PORT install py34-numpy py34-scipy
 $PORT install py34-gobject3
 $PORT install py34-tz
