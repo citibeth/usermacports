@@ -1,0 +1,69 @@
+#!/bin/sh
+#
+
+# http://stackoverflow.com/questions/2870992/automatic-exit-from-bash-shell-script-on-error
+set -e
+# Any subsequent(*) commands that fail will cause the shell script to exit immediately
+
+# http://stackoverflow.com/questions/2853803/in-a-shell-script-echo-shell-commands-as-they-are-executed
+set -o verbose
+
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+export MACPORTS=$HOME/macports/tools
+PORT=$MACPORTS/bin/port
+
+# Create the basic MacPorts Installation
+$SCRIPTDIR/new_macports $MACPORTS
+
+## Redirect for the rest of this script
+#exec 2>&1 | tee $MACPORTS/core/install_ports.log
+
+# ==================================================================
+
+# Python is needed down the line.  Install -f to avoid problems later.
+$PORT -f install python34	# Override stuff in $HOME/
+$PORT -f install python27	# Override stuff in $HOME/
+
+# ---------- Utilities (not compiler version-critical)
+$PORT install pkgconfig doxygen wget
+
+# ----------- Dbus
+$PORT install -f dbus +no_root -startupitem
+
+# --------------- More Utilities
+$PORT install nautilus pdftk cmake
+#$PORT install nco     # Port fails as of Nov 13, 2015
+$PORT install ncview netcdf udunits py34-netcdf4
+
+# --------------- Terminator
+$PORT install p5-xml-parser
+mkdir -p $MACPORTS/downloads
+pushd $MACPORTS/downloads
+svn co -r 106601 http://svn.macports.org/repository/macports/trunk/dports/gnome/vte
+cd vte
+$PORT install subport=vte +python27
+$PORT install -f vte-gtk2-compat @0.28.2_3+python27    # Needed for terminator
+$PORT install terminator
+popd
+
+# -------------- Viewers
+$PORT install evince 	# pdf
+$PORT install geeqie meld giggle
+
+# --------------- LaTeX (comes now with gcc49-python3)
+#$PORT install texlive
+
+
+
+
+
+#-->  Activating coreutils @8.24_0
+#
+#The tools provided by GNU coreutils are prefixed with the character 'g' by default to distinguish them
+#from the BSD commands.
+#For example, cp becomes gcp and ls becomes gls.
+#
+#If you want to use the GNU tools by default, add this directory to the front of your PATH environment
+#variable:
+#    /Users/rpfische/macports/gcc49-python3/libexec/gnubin/

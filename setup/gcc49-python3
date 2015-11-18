@@ -1,0 +1,92 @@
+#!/bin/sh
+#
+
+# http://stackoverflow.com/questions/2870992/automatic-exit-from-bash-shell-script-on-error
+set -e
+# Any subsequent(*) commands that fail will cause the shell script to exit immediately
+
+# http://stackoverflow.com/questions/2853803/in-a-shell-script-echo-shell-commands-as-they-are-executed
+set -o verbose
+
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+export MACPORTS=$HOME/macports/gcc49-python3
+PORT=$MACPORTS/bin/port
+
+# Create the basic MacPorts Installation
+$SCRIPTDIR/new_macports $MACPORTS
+
+## Redirect for the rest of this script
+#exec 2>&1 | tee $MACPORTS/core/install_ports.log
+
+# ==================================================================
+
+# Install stuff to it
+# -------- Core System: Compilers, etc.
+$PORT install gcc49 +gfortran
+$PORT select --list gcc
+$PORT select gcc mp-gcc49
+
+$PORT install -f python27+readline  # Needed for gtk3 below; should use same compiler as gtk3
+$PORT install -f python34 +readline configure.compiler=macports-gcc-4.9
+$PORT select --set python python34
+$PORT select --set python3 python34
+
+$PORT install boost +python34 configure.compiler=macports-gcc-4.9
+
+$PORT install openmpi-gcc49
+$PORT select --set mpi openmpi-gcc49-fortran
+
+$PORT install cmake gmake
+
+# ---------- Libraries (for compiling Glint2 and PISM)
+$PORT install blitz +gcc49
+$PORT install hdf5 +fortran +gcc49 +openmpi +cxx
+#$PORT install netcdf-cxx +gcc49 +openmpi      # We have our customized version of this one for everytrace
+$PORT install netcdf-cxx4 +gcc49 +openmpi
+$PORT install netcdf-fortran +gcc49 +openmpi
+$PORT install proj udunits2 gsl
+$PORT install cgal configure.compiler=macports-gcc-4.9
+
+$PORT install -f dbus +no_root -startupitem   # Needed for gtk3
+
+$PORT install source-highlight configure.compiler=macports-gcc-4.9  # needed for gtk3; this is C++ code, so GCC must be specified
+$PORT install gtk3 +introspection +x11	# +introspection needed for MatPlotLib
+
+
+# ----------- Python Stuff
+$PORT install py34-netcdf4
+#$PORT install py34-tkinter
+$PORT install py34-ipython
+$PORT select --set ipython ipython34
+$PORT install py34-numpy py34-scipy
+$PORT install py34-gobject3
+$PORT install py34-tz
+$PORT install py34-cffi
+# Then install manually: https://pypi.python.org/pypi/cairocffi/0.7.2
+# (CairoCFFI is a CFFI-based replacement for PyCairo.  It allows
+# matplotlib +cairo to work.  CFFI = C Foreign Function Interface.
+# Basically, CairoCFFI is an alternate implementation of Cairo.)
+$PORT install py34-matplotlib +cairo +latex +pdftops +ghostscript +webagg
+$PORT install geos configure.compiler=macports-gcc-4.9
+$PORT install py34-matplotlib-basemap py34-pyproj
+
+
+
+# END OF SCRIPT
+
+
+
+
+
+#
+## Install manually: cf_units (NOT NEEDED)
+#
+#
+## Do for ~/.matplotlib/matplotlibrc:
+#
+## backend : GTK3Agg
+## Nominally available backends: ['GTK', 'GTKAgg', 'GTKCairo', 'MacOSX', 'Qt4Agg', 'Qt5Agg', 'TkAgg', 'WX', 'WXAgg', 'CocoaAgg', 'GTK3Cairo', 'GTK3Agg', 'WebAgg', 'nbAgg']
+#
+#
+#

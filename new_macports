@@ -1,0 +1,260 @@
+#!/usr/bin/python
+#
+
+import sys
+# Check Python version
+if sys.version_info[0] != 2:
+	raise Exception('Python2 required!')
+
+import os
+import tarfile
+import shutil
+import subprocess
+import grp
+import pwd
+import re
+import traceback
+import select
+
+# -------------------------------------------------
+
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc: # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else: raise
+
+
+# http://stackoverflow.com/questions/1597649/replace-strings-in-files-by-python
+def file_replace(fname, pat, s_after):
+    # first, see if the pattern is even in the file.
+    with open(fname) as f:
+        if not any(re.search(pat, line) for line in f):
+            return # pattern does not occur in file so we are done.
+
+    # pattern is in the file, so perform replace operation.
+    with open(fname) as f:
+        out_fname = fname + ".tmp"
+        out = open(out_fname, "w")
+        for line in f:
+            out.write(re.sub(pat, s_after, line))
+        out.close()
+        os.rename(out_fname, fname)
+
+# -------------------------------------------------
+
+class MacPortsEnv(object):
+
+	def __init__(self, dest_dir=None):
+
+		# Set up where we're creating this
+		HOME=os.environ['HOME']
+
+		if dest_dir is None:
+			dest_dir = os.path.join(HOME, 'macports/test')
+
+		self.tgz_fname = os.path.join(HOME, 'Downloads/MacPorts-2.3.4.tar.gz')
+		self.dest_dir = dest_dir
+		self.force = False
+
+		# Derivative stuff
+		self.src_dir = os.path.join(self.dest_dir, 'core')
+		self.env = dict(os.environ)
+		self.env['PATH'] = '/usr/bin:/usr/sbin:/bin:/sbin'
+
+		self.steps_dir = os.path.join(self.dest_dir, 'steps')
+		self.port_exe = os.path.join(self.dest_dir, 'bin/port')
+
+		# Get info on the user
+		user_info = pwd.getpwuid(os.getuid())
+		self.pw_name = user_info[0]	# pw_name
+		self.pw_gid =  user_info[3]	# pw_gid
+
+	def step_file(self, stepno):
+		return os.path.join(self.steps_dir, 'step{:02d}'.format(stepno))
+	def step_log(self, stepno):
+		return os.path.join(self.steps_dir, 'step{:02d}.log'.format(stepno))
+
+	# ----------------------------------------------------
+	def begin_step(self, stepno):
+		step_file = self.step_file(stepno)
+		if self.force:
+			try:
+				os.remove(step_file)
+			except:
+				pass
+			self.stepno = stepno
+			return True
+
+		if not os.path.isfile(step_file):
+			self.stepno = stepno
+			return True
+		return False
+
+	def end_step(self, stepno):
+		with open(self.step_file(stepno), 'w') as f:
+			pass
+				
+	def run_step(self, stepno):
+		if self.begin_step(stepno):
+			try:
+				stepfn = type(self).__dict__['step{}'.format(stepno)]
+			except:
+				return False
+
+			print '========== Running step {}'.format(stepno)
+			try:
+				os.remove(self.step_log(stepno))
+			except:
+				pass
+			try:
+				stepfn(self)
+			except Exception as e:
+				out = open(self.step_log(stepno), mode='a')
+				tb = traceback.format_exc()
+				out.write(tb)
+				raise
+		else:
+			print 'Skipping step {}'.format(stepno)
+
+		# We only get here if we succeeded
+		self.end_step(stepno)
+
+		return True
+
+	# ----------------------------------------------------
+
+	def run_cmd(self,cmd, error_msg=None, **kwargs):
+		print 'Running cmd: ', ' '.join(cmd)
+		with open(self.step_log(self.stepno), 'w') as step_log:
+			proc = subprocess.Popen(cmd, shell=False, env=self.env,
+				stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
+
+			# Tee the output, and send to file nicely
+			out_prefix = '[o{}] '.format(stepno)
+			err_prefix = '[e{}] '.format(stepno)
+
+			reads = (proc.stdout.fileno(), proc.stderr.fileno())
+			while True:
+				ret = select.select(reads, [], [])
+
+				for fd in ret[0]:
+					read = proc.stdout.readline()
+					if fd == proc.stdout.fileno():
+						oline = out_prefix + read
+					elif fd == proc.stderr.fileno():
+						oline = err_prefix + read
+
+					step_log.write(oline)
+					sys.stdout.write(oline)
+
+				if proc.poll() != None:
+					break
+
+			status = proc.wait()		# We're probably already terminated
+			if status < 0:
+				if error_msg is None:
+					error_msg = 'Failed on: {}'.format(' '.join(cmd))
+				raise Exception(error_msg)
+
+
+	# ================================================================
+
+	# Prepare the source directory
+	def step0(self):
+		try:
+			shutil.rmtree(self.src_dir)
+		except:
+			pass
+		mkdir_p(self.src_dir)
+		mkdir_p(self.steps_dir)
+
+
+	# Untar the file
+	def step1(self, force=False):
+		os.chdir(self.src_dir)
+		tar = tarfile.open(self.tgz_fname)
+		tar.extractall()
+		tar.close()
+
+		# Find the one directory created
+		top_untar = None
+		for leafname in os.listdir(self.src_dir):
+			if leafname == 'steps': continue
+			fname = os.path.join(self.src_dir, leafname)
+			if os.path.isdir(fname):
+				if top_untar is not None:
+					raise Exception('Untar into {} produced more than one top-level directory!'.format(self.src_dir))
+				top_untar = fname
+
+		# Move stuff up
+		for fname in os.listdir(top_untar):
+			shutil.move(os.path.join(top_untar, fname), os.path.join(self.src_dir, fname))
+
+
+	# Main configuration of MacPorts
+	def step2(self):
+		cmd = ['./configure', '--enable-readline',
+			 '--prefix={}'.format(self.dest_dir),
+			 '--with-install-user={}'.format(self.pw_name),
+			 '--with-install-group={}'.format(self.pw_gid)]
+
+		self.run_cmd(cmd, cwd=self.src_dir)
+
+	# Fix files in build tree
+	def step3(self):
+		file_replace(os.path.join(self.src_dir, 'doc/base.mtree'), 'gname', 'gid')
+		file_replace(os.path.join(self.src_dir, 'doc/prefix.mtree'), 'gname', 'gid')
+
+		file_replace(os.path.join(self.src_dir, 'doc/macosx.mtree'),
+			'uname=root gname=wheel', 'uname={} gid={}'.format(self.pw_name, self.pw_gid))
+		file_replace(os.path.join(self.src_dir, 'doc/macosx.mtree'),
+			'uname=root gname=admin', 'uname={} gid={}'.format(self.pw_name, self.pw_gid))
+
+	# Create destination directory (build fails to do so)
+	def step4(self):
+		try:
+			os.makedirs(os.path.join(self.dest_dir, 'var','macports','registry'))
+		except:
+			pass
+
+	# Compile!
+	def step5(self):
+		cmd = ['make', '-j4']
+		self.run_cmd(cmd, cwd=self.src_dir)
+		cmd = ['make', 'install']
+		self.run_cmd(cmd, cwd=self.src_dir)
+
+	# Set up for tarball-based port updates
+	def step6(self):
+		rsyncRE = re.compile('\s*rsync://.*?\[\s*default\s*\]\s*')
+		sources_conf = os.path.join(self.dest_dir, 'etc/macports/sources.conf')
+		edited = []
+		for line in open(sources_conf, 'r'):
+			if rsyncRE.match(line) is not None:
+				edited.append('# ' + line)
+				edited.append('https://distfiles.macports.org/ports.tar.gz [default]')
+			else:
+				edited.append(line)
+
+		with open(sources_conf, 'w') as fout:
+			for line in edited:
+				fout.write(line)
+			fout.write('\n')
+
+	# Download the new ports
+	def step7(self):
+		cmd = [self.port_exe, '-d', 'sync']
+		self.run_cmd(cmd, cwd=self.dest_dir)
+
+
+
+
+# -----------------------------------------------
+
+mpenv = MacPortsEnv(dest_dir=sys.argv[1])
+stepno = 0
+while mpenv.run_step(stepno):
+	stepno += 1
