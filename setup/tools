@@ -14,7 +14,7 @@ export MACPORTS=$HOME/macports/tools
 PORT=$MACPORTS/bin/port
 
 # Create the basic MacPorts Installation
-$SCRIPTDIR/new_macports $MACPORTS
+# $SCRIPTDIR/new_macports $MACPORTS
 
 ## Redirect for the rest of this script
 #exec 2>&1 | tee $MACPORTS/core/install_ports.log

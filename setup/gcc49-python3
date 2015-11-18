@@ -14,7 +14,7 @@ export MACPORTS=$HOME/macports/gcc49-python3
 PORT=$MACPORTS/bin/port
 
 # Create the basic MacPorts Installation
-$SCRIPTDIR/new_macports $MACPORTS
+# $SCRIPTDIR/new_macports $MACPORTS
 
 ## Redirect for the rest of this script
 #exec 2>&1 | tee $MACPORTS/core/install_ports.log
@@ -27,7 +27,7 @@ $PORT install gcc49 +gfortran
 $PORT select --list gcc
 $PORT select gcc mp-gcc49
 
-$PORT install -f python27+readline  # Needed for gtk3 below; should use same compiler as gtk3
+$PORT install -f python27 +readline  # Needed for gtk3 below; should use same compiler as gtk3
 $PORT install -f python34 +readline configure.compiler=macports-gcc-4.9
 $PORT select --set python python34
 $PORT select --set python3 python34
