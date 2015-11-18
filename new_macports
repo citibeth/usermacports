@@ -16,6 +16,8 @@ import re
 import traceback
 import select
 
+MACPORTS_DOWNLOAD='MacPorts-2.3.4.tar.gz'
+
 # -------------------------------------------------
 
 def mkdir_p(path):
@@ -55,7 +57,7 @@ class MacPortsEnv(object):
 		if dest_dir is None:
 			dest_dir = os.path.join(HOME, 'macports/test')
 
-		self.tgz_fname = os.path.join(HOME, 'Downloads/MacPorts-2.3.4.tar.gz')
+		self.tgz_fname = os.path.join(HOME, 'Downloads', MACPORTS_DOWNLOAD)
 		self.dest_dir = dest_dir
 		self.force = False
 
