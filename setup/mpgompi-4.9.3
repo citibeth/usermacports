@@ -1,0 +1,25 @@
+#!/bin/sh
+#
+# Creates just a toolchain, for use with EasyBuild
+
+# http://stackoverflow.com/questions/2870992/automatic-exit-from-bash-shell-script-on-error
+set -e
+# Any subsequent(*) commands that fail will cause the shell script to exit immediately
+
+# http://stackoverflow.com/questions/2853803/in-a-shell-script-echo-shell-commands-as-they-are-executed
+set -o verbose
+
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+export MACPORTS=$HOME/macports/mpgompi-4.9.3
+PORT=$MACPORTS/bin/port
+
+# ==================================================================
+
+# Install stuff to it
+# -------- Core System: Compilers, etc.
+$PORT install gcc49 +gfortran
+$PORT select --list gcc
+$PORT select gcc mp-gcc49
+
+$PORT install openmpi-gcc49

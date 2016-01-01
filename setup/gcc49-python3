@@ -73,6 +73,7 @@ $PORT install py34-matplotlib +cairo +latex +pdftops +ghostscript +webagg
 $PORT install geos configure.compiler=macports-gcc-4.9
 $PORT install py34-matplotlib-basemap py34-pyproj
 
+$PORT install gtest configure.compiler=macports-gcc-4.9
 
 
 # END OF SCRIPT

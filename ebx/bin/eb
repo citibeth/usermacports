@@ -1,0 +1,13 @@
+#!/bin/sh
+#
+
+# https://docs.python.org/2/using/cmdline.html#envvar-PYTHONUSERBASE
+# Set up to use site directory at: $EB_ROOT/software/EasyBuild/2.5.0/lib/python2.7/site-packages
+
+export PYTHONPATH=$HOME/ebx/pylib
+export PYTHONUSERBASE=$EB_ROOT/software/EasyBuild/2.5.0
+echo 'PYTHONPATH=' $PYTHONPATH
+$EB_ROOT/bin/python -m easybuild.main \
+	--robot=$HOME/easyconfigs/macosx:$EB_ROOT/easyconfigs \
+	--prefix=$EB_ROOT/easybuild \
+	"$@"

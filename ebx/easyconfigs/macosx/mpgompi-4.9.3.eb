@@ -1,0 +1,34 @@
+##
+# This is an easyconfig file for EasyBuild, see https://github.com/hpcugent/easybuild
+#
+# Copyright:: Copyright 2015 Juelich Supercomputing Centre, Germany
+# Authors::   Bernd Mohr <b.mohr@fz-juelich.de>
+# License::   3-clause BSD
+##
+
+easyblock = 'easybuild.easyblocks.tree.Tree'
+
+# The compiler, and root of the tree where we expect to find it.
+name = 'mpgompi'
+sanity_check_paths = {
+	'files': [],
+	'dirs': ['/Users/rpfische/macports/mpgompi-4.9.3'],
+}
+
+
+# using 'system' as a version instructs the SystemCompiler easyblock
+# to derive the actual compiler version, and define $EBVERSION*
+# accordingly (yet generate a module named GCC/system); if an actual
+# version is specified here, it will be checked against the version of
+# the system compiler that was found
+version = '4.9.3'
+
+homepage = 'http://gcc.gnu.org/'
+
+description = """MacPorts directory with GCC + OpenMPI"""
+
+toolchain = {'name': 'dummy', 'version': 'dummy'}
+
+# this bundle serves as a compiler-only toolchain, so it should be marked as compiler (important for HMNS)
+# HMNS = Hierarchical Module Naming Scheme
+moduleclass = 'compiler'
