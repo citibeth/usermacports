@@ -23,3 +23,10 @@ $PORT select --list gcc
 $PORT select gcc mp-gcc49
 
 $PORT install openmpi-gcc49
+$PORT select --set mpi openmpi-gcc49-fortran
+
+cd $MACPORTS/bin
+rm -f mpifort
+ln -s `readlink mpifort-openmpi-gcc49` mpifort
+
+$PORT install cmake   # EasyBuild CMake chokes on MacPorts
