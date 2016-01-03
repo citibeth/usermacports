@@ -1,0 +1,27 @@
+easyblock = 'CmakeDev'
+
+name = 'everytrace'
+version = 'devel'
+
+homepage = 'https://github.com/citibob/everytrace/'
+description = """Get a stacktrace on ALL forms of program exit"""
+
+toolchain = {'name': 'mpgompi', 'version': '4.9.3'}
+
+sources = ['/Users/rpfische/git/everytrace']
+source_urls = ['https://github.com/citibob/everytrace/tarball/%(version)s']
+separate_build_dir = True
+
+configopts = '-DUSE_FORTRAN=YES'
+
+#sanity_check_paths = {
+#    'files': ['bin/protoc'],
+#    'dirs': [],
+#}
+
+
+builddependencies = [
+    ('CMake', '3.4.1', '', ('GCC', '4.9.3')),
+]
+
+moduleclass = 'devel'

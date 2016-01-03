@@ -1,0 +1,35 @@
+easyblock = 'CmakeDev'
+
+name = 'icebin'
+version = 'devel'
+
+homepage = 'https://github.com/citibeth/icebin/'
+description = """Sparse-Sparse Matrix Multiplication"""
+
+toolchain = {'name': 'mpgompi', 'version': '4.9.3'}
+
+sources = ['/Users/rpfische/git/icebin']
+source_urls = ['https://github.com/citibeth/icebin/tarball/%(version)s']
+#separate_build_dir = True
+
+configopts = '-DUSE_FORTRAN=YES'
+
+dependencies = [
+	('blitz', '0.10', '', ('GCC', '4.9.3')),
+	('gtest', '1.7.0', '', ('GCC', '4.9.3')),
+	('everytrace', 'devel', '', ('mpgompi', '4.9.3')),
+	('spsparse', 'devel', '', ('GCC', '4.9.3')),
+]
+
+builddependencies = [
+    ('CMake', '3.4.1', '', ('GCC', '4.9.3')),
+	('Doxygen', '1.8.11', '', ('GCC', '4.9.3')),
+]
+
+sanity_check_paths = {
+    'files': ['lib/libicebin.%s' % SHLIB_EXT],
+    'dirs': ['include/icebin'],
+}
+
+
+moduleclass = 'numlib'

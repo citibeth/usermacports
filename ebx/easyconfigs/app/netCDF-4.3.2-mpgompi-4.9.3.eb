@@ -29,9 +29,11 @@ builddependencies = [
 ]
 
 # make sure both static and shared libs are built
+# SHLIB_EXT is more correct.  But Macintosh CMake seems to figure it out
+# even if a hardcoded .so is used.
 configopts = [
-    "-DCURL_LIBRARY=$EBROOTCURL/lib/libcurl.so -DCURL_INCLUDE_DIR=$EBROOTCURL/include -DBUILD_SHARED_LIBS=ON",
-    "-DCURL_LIBRARY=$EBROOTCURL/lib/libcurl.so -DCURL_INCLUDE_DIR=$EBROOTCURL/include -DBUILD_SHARED_LIBS=OFF",
+    "-DCURL_LIBRARY=$EBROOTCURL/lib/libcurl.%s -DCURL_INCLUDE_DIR=$EBROOTCURL/include -DBUILD_SHARED_LIBS=ON" % SHLIB_EXT,
+    "-DCURL_LIBRARY=$EBROOTCURL/lib/libcurl.%s -DCURL_INCLUDE_DIR=$EBROOTCURL/include -DBUILD_SHARED_LIBS=OFF" % SHLIB_EXT,
 ]
 
 moduleclass = 'data'

@@ -1,4 +1,4 @@
-easyblock = "MakeCp"
+easyblock = 'CMakeMakeCp'
 
 name = 'gtest'
 version = '1.7.0'
@@ -11,12 +11,21 @@ toolchain = {'name': 'GCC', 'version': '4.9.3'}
 sources = [SOURCE_ZIP]
 source_urls = ['https://googletest.googlecode.com/files']
 
+# Tells CMakeMakeCp to configure and build the project...
 with_configure = True
 
-files_to_copy = ['lib', 'include']
+builddependencies = [
+    ('CMake', '3.4.1', '', ('GCC', '4.9.3')),
+]
+
+
+files_to_copy = [
+	(['libgtest.a', 'libgtest_main.a'], 'lib'),
+	'include'
+]
 
 sanity_check_paths={
-    'files': ['lib/libgtest.la', 'lib/libgtest_main.la'],
+    'files': ['lib/libgtest.a', 'lib/libgtest_main.a'],
     'dirs': ['include'],
 }
 

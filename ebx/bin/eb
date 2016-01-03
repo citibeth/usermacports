@@ -4,6 +4,20 @@
 # https://docs.python.org/2/using/cmdline.html#envvar-PYTHONUSERBASE
 # Set up to use site directory at: $EB_ROOT/software/EasyBuild/2.5.0/lib/python2.7/site-packages
 
+# Put the following in your .profile to use eb
+#
+# # ------- Set up for lmod (and lua)
+# export EB_ROOT=$HOME/eb
+# eval $($EB_ROOT/bin/luarocks path --bin)
+# source $EB_ROOT/lmod/lmod/init/profile
+#
+# # -------- Set up for easybuild
+# export PATH=$PATH:$EB_ROOT/lmod/lmod/libexec	# Add lmod to path
+# export MODULEPATH=/Users/rpfische/eb/modules/all
+# export EASYBUILD_MODULES_TOOL=Lmod
+# export EASYBUILD_INSTALLPATH=$EB_ROOT
+
+
 export PYTHONPATH=$HOME/ebx/pylib
 export PYTHONUSERBASE=$EB_ROOT/software/EasyBuild/2.5.0
 echo 'PYTHONPATH=' $PYTHONPATH
@@ -13,10 +27,11 @@ $EB_ROOT/bin/python -m easybuild.main \
 	--prefix=$EB_ROOT/easybuild \
 	"$@"
 
-# :$EB_ROOT/easyconfigs
+# Options above:
 # optarch=GENERIC: Disable architecture-specific optimization on Mac, which produces unknown assembler instructions.
-
 
 # To re-install one of the three EasyBuild packages, from the main git directory:
 # export PYTHONUSERBASE=$EB_ROOT/software/EasyBuild/2.5.0
 # python2.7 setup.py install --user
+
+
