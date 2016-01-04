@@ -1,4 +1,5 @@
 easyblock = 'CmakeDev'
+separate_build_dir = True
 
 name = 'spsparse'
 version = 'devel'
@@ -10,7 +11,6 @@ toolchain = {'name': 'GCC', 'version': '4.9.3'}
 
 sources = ['/Users/rpfische/git/spsparse']
 source_urls = ['https://github.com/citibeth/spsparse/tarball/%(version)s']
-#separate_build_dir = True
 
 configopts = '-DUSE_FORTRAN=YES'
 

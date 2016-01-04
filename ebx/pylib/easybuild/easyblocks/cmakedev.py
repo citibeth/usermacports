@@ -83,8 +83,11 @@ class CmakeDev(CMakeMake):
 		setvar("CMAKE_LIBRARY_PATH", library_paths)
 
 		default_srcdir = '.'
-		if self.cfg.get('separate_build_dir', False):
+                separate_build_dir = True	# Always do this option; it make such a mess if you don't
+		# separate_build_dir = self.cfg.get('separate_build_dir', False)
+		if separate_build_dir:
 			objdir = os.path.join(self.builddir, 'build')
+			self.log.info("Creating CMake build dir %s" % objdir)
 			try:
 				os.mkdir(objdir)
 			except OSError, err:
@@ -93,7 +96,7 @@ class CmakeDev(CMakeMake):
 			try:
 				os.chdir(objdir)
 			except OSError, err:
-				raise EasyBuildError("Failed to create separate build dir %s in %s: %s", objdir, os.getcwd(), err)
+				raise EasyBuildError("Failed to cd to separate build dir %s in %s: %s", objdir, os.getcwd(), err)
 			default_srcdir = self.cfg['start_dir']
 
 		if srcdir is None:
@@ -122,6 +125,8 @@ class CmakeDev(CMakeMake):
 		options_string = " ".join(options)
 
 		command = "%s cmake %s %s %s" % (self.cfg['preconfigopts'], srcdir, options_string, self.cfg['configopts'])
+		self.log.info('CWD = %s' % os.getcwd())
+		self.log.info('Running cmd: %s' % command)
 		(out, _) = run_cmd(command, log_all=True, simple=False)
 
 		return out
