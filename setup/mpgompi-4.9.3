@@ -30,3 +30,5 @@ rm -f mpifort
 ln -s `readlink mpifort-openmpi-gcc49` mpifort
 
 $PORT install cmake   # EasyBuild CMake chokes on MacPorts
+$PORT install -f python34 +readline configure.compiler=macports-gcc-4.9
+$PORT install boost +python34 configure.compiler=macports-gcc-4.9
