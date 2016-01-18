@@ -18,10 +18,15 @@
 # export EASYBUILD_INSTALLPATH=$EB_ROOT
 
 
-export PYTHONPATH=$HOME/ebx/pylib
-export PYTHONUSERBASE=$EB_ROOT/software/EasyBuild/2.5.0
-echo 'PYTHONPATH=' $PYTHONPATH
-$EB_ROOT/bin/python -m easybuild.main \
+#	PATH=$PATH \
+#	LMOD_CMD=$LMOD_CMD \
+#	MODULESHOME=$MODULESHOME \
+#	LMOD_DIR=$LMOD_DIR \
+
+env \
+	PYTHONPATH=$HOME/ebx/pylib \
+	PYTHONUSERBASE=$EB_ROOT/software/EasyBuild/2.5.0 \
+	$EB_ROOT/bin/python -m easybuild.main \
 	--optarch=GENERIC \
 	--robot=$HOME/ebx/easyconfigs/macosx:$HOME/ebx/easyconfigs/app \
 	--prefix=$EB_ROOT/easybuild \

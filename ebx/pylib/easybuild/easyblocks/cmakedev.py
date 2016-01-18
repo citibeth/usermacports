@@ -92,13 +92,14 @@ class CmakeDev(CMakeMake):
 r"""#!/usr/bin/env python
 #
 
+import sys
 import os
 import subprocess
 
 def cmdlist(str):
 	return list(x.strip().replace("'",'') for x in str.split('\n') if x)
 
-env = dict()
+env = dict(PATH=os.getenv('PATH'))
 """)
 
 		self.log.info("Creating CMake build dir %s" % objdir)
@@ -123,9 +124,21 @@ env = dict()
 		# Set the search paths for CMake
 		include_paths = os.pathsep.join(self.toolchain.get_variable("CPPFLAGS", list))
 		library_paths = os.pathsep.join(self.toolchain.get_variable("LDFLAGS", list))
-		setvar("CMAKE_INCLUDE_PATH", include_paths)
-		setvar("CMAKE_LIBRARY_PATH", library_paths)
+#		setvar("CMAKE_INCLUDE_PATH", include_paths)
+#		setvar("CMAKE_LIBRARY_PATH", library_paths)
+		setvar("CMAKE_INCLUDE_PATH", os.getenv('CFLAGS'))
+		setvar("CMAKE_LIBRARY_PATH", os.getenv('LD_LIBRARY_PATH'))
 
+		# ---------------------------------------------------------
+		configme_out.write("env['EB_INCLUDE_PATH'] = ';'.join(cmdlist(")
+		configme_out.write('"""\n')
+		# Get transitive paths as loaded by module command
+		for path in os.getenv('CPATH').split(os.pathsep):
+			configme_out.write("    %s\n" % path)
+		configme_out.write('"""')
+		configme_out.write("))\n\n")
+
+		# ---------------------------------------------------------
 		configme_out.write("env['CMAKE_INCLUDE_PATH'] = os.pathsep.join(cmdlist(")
 		configme_out.write('"""\n')
 		for path in self.toolchain.get_variable("CPPFLAGS", list):
@@ -139,6 +152,7 @@ env = dict()
 			configme_out.write("    %s\n" % path)
 		configme_out.write('"""')
 		configme_out.write("))\n\n")
+		# ---------------------------------------------------------
 
 
 #		configme_out.write("export CMAKE_INCLUDE_PATH='%s'\n" % include_paths)
@@ -179,7 +193,7 @@ env = dict()
 		configme_out.write('    %s\n' % srcdir)
 		for opt in options:
 			configme_out.write('    %s\n' % opt)
-		configme_out.write('""")\n\n')
+		configme_out.write('""") + sys.argv[1:]\n\n')
 		configme_out.write
 		configme_out.write("proc = subprocess.Popen(cmd, env=env, cwd=%s)\n" % repr(objdir))
 		configme_out.write("proc.wait()\n")
