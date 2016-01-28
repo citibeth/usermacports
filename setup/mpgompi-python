@@ -1,0 +1,16 @@
+# http://python-packaging-user-guide.readthedocs.org/en/latest/installing/
+# Securely Download get-pip.py [1]
+# Run python get-pip.py. [2] This will install or upgrade pip. Additionally, it will install setuptools and wheel if they’re not installed already.
+
+MACPORTS=$HOME/macports/mpgompi-4.9.3
+
+wget https://bootstrap.pypa.io/get-pip.py
+
+$MACPORTS/bin/python get-pip.py
+cd $MACPORTS/bin
+ln -s $MACPORTS/Library/Frameworks/Python.framework/Versions/3.4/bin/* .
+
+virtualenv $HOME/eb/pyenv		# Create
+source $HOME/eb/pyenv/bin/activate
+
+# Now run pip with: python -m pip ...
