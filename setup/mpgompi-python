@@ -14,3 +14,4 @@ virtualenv $HOME/eb/pyenv		# Create
 source $HOME/eb/pyenv/bin/activate
 
 # Now run pip with: python -m pip ...
+pip install netCDF4
