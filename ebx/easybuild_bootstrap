@@ -2,7 +2,7 @@
 #
 set -e
 
-export EB_ROOT=$HOME/eb2
+export EB_ROOT=$HOME/eb
 export PATH=$EB_ROOT/bin:$PATH
 
 mkdir -p $EB_ROOT/src
@@ -16,12 +16,21 @@ git clone --depth 1 -b 2.2.3 https://github.com/keplerproject/luarocks.git
 
 #git clone --depth 1 -b 3.1.11 git://git.code.sf.net/p/lmod/code lmod-code
 git clone --depth 1 -b 6.0.24 https://github.com/TACC/Lmod.git
-curl -O https://raw.githubusercontent.com/hpcugent/easybuild-framework/develop/easybuild/scripts/bootstrap_eb.py
+#curl -O https://raw.githubusercontent.com/hpcugent/easybuild-framework/develop/easybuild/scripts/bootstrap_eb.py
 
 mkdir -p $EB_ROOT
 cd $EB_ROOT
-git clone --depth 1 -b v2.3.x https://github.com/hpcugent/easybuild-easyconfigs
-ln -s easybuild-easyconfigs/easybuild/easyconfigs .
+#git clone --depth 1 -b v2.3.x https://github.com/hpcugent/easybuild-easyconfigs
+#ln -s easybuild-easyconfigs/easybuild/easyconfigs .
+
+mkdir -p $EB_ROOT/git
+cd $EB_ROOT/git
+git clone https://github.com/hpcugent/vsc-base
+git clone git@github.com:citibeth/easybuild-framework.git
+git clone git@github.com:citibeth/easybuild-easyblocks.git
+git clone git@github.com:citibeth/easybuild-easyconfigs.git
+
+
 
 # --------------------------------------------------
 # Get a Lua interpreter
@@ -53,14 +62,16 @@ cd $EB_ROOT/src
 cd Lmod
 ./configure --prefix=$EB_ROOT
 make install
-ln -s $EB_ROOT/lmod/lmod/libexec $EB_ROOT/bin
+#ln -s $EB_ROOT/lmod/lmod/libexec $EB_ROOT/bin
 
 # -----------------------------------------------
 # EasyBuild
-cd $EB_ROOT/src
+
+
+#cd $EB_ROOT/src
 # PATH=$EB_ROOT/bin:$PATH 
-python bootstrap_eb.py $EB_ROOT		# Make sure "python" maps to system default python 2.7
+#python bootstrap_eb.py $EB_ROOT		# Make sure "python" maps to system default python 2.7
 
 # Help Python find the site directory (also see PYTHONUSERBASE)
-cd $EB_ROOT/software/EasyBuild/2.5.0/lib
-ln -s python2.7 python
+#cd $EB_ROOT/software/EasyBuild/2.5.0/lib
+#ln -s python2.7 python

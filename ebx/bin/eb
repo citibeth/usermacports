@@ -25,12 +25,12 @@
 
 #	PYTHONUSERBASE=$EB_ROOT/software/EasyBuild/2.5.0 \
 
-GIT_HOME=$HOME/git/eb
-
 env \
-	PYTHONPATH=$GIT_HOME/easybuild-framework:$GIT_HOME/easybuild-easyblocks:$HOME/ebx/pylib \
-	PYTHONUSERBASE=$EB_ROOT/software/EasyBuild/2.5.0 \
-	$EB_ROOT/bin/python -m easybuild.main \
+	MODULEPATH=$EB_ROOT/modules/all \
+	EASYBUILD_MODULES_TOOL=Lmod \
+	EASYBUILD_INSTALLPATH=$EB_ROOT \
+	PYTHONPATH=$EB_ROOT/git/easybuild-framework:$EB_ROOT/git/easybuild-easyblocks:$EB_ROOT/git/vsc-base/lib:$HOME/ebx/pylib \
+	python2.7 -m easybuild.main \
 	--optarch=GENERIC \
 	--robot=$HOME/ebx/easyconfigs/macosx:$HOME/ebx/easyconfigs/app \
 	--prefix=$EB_ROOT/easybuild \
