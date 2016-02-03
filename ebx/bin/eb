@@ -23,8 +23,12 @@
 #	MODULESHOME=$MODULESHOME \
 #	LMOD_DIR=$LMOD_DIR \
 
+#	PYTHONUSERBASE=$EB_ROOT/software/EasyBuild/2.5.0 \
+
+GIT_HOME=$HOME/git/eb
+
 env \
-	PYTHONPATH=$HOME/ebx/pylib \
+	PYTHONPATH=$GIT_HOME/easybuild-framework:$GIT_HOME/easybuild-easyblocks:$HOME/ebx/pylib \
 	PYTHONUSERBASE=$EB_ROOT/software/EasyBuild/2.5.0 \
 	$EB_ROOT/bin/python -m easybuild.main \
 	--optarch=GENERIC \
