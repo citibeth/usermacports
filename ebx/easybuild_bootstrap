@@ -73,5 +73,10 @@ make install
 #python bootstrap_eb.py $EB_ROOT		# Make sure "python" maps to system default python 2.7
 
 # Help Python find the site directory (also see PYTHONUSERBASE)
+<<<<<<< Updated upstream
 #cd $EB_ROOT/software/EasyBuild/2.5.0/lib
 #ln -s python2.7 python
+=======
+cd $EB_ROOT/software/EasyBuild/2.6.0/lib
+ln -s python2.7 python
+>>>>>>> Stashed changes
