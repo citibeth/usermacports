@@ -20,8 +20,8 @@ patches = ['configure_libtool.patch']
 buildopts = 'CXXFLAGS="$CXXFLAGS -DMPICH_IGNORE_CXX_SEEK"'
 
 dependencies = [
-    ('zlib', '1.2.8'),
-    ('Szip', '2.1'),
+    ('zlib', '1.2.8', '', ('GCC', '4.9.3')),
+    ('Szip', '2.1', '', ('GCC', '4.9.3')),
 ]
 
 moduleclass = 'data'
