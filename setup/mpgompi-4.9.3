@@ -13,6 +13,7 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 export MACPORTS=$HOME/macports/mpgompi-4.9.3
 PORT=$MACPORTS/bin/port
+PIP=$MACPORTS/bin/pip
 
 # ==================================================================
 
@@ -25,17 +26,35 @@ $PORT select gcc mp-gcc49
 $PORT install openmpi-gcc49
 $PORT select --set mpi openmpi-gcc49-fortran
 
-cd $MACPORTS/bin
-rm -f mpifort
-ln -s `readlink mpifort-openmpi-gcc49` mpifort
+#cd $MACPORTS/bin
+#rm -f mpifort
+#ln -s `readlink mpifort-openmpi-gcc49` mpifort
 
 $PORT install cmake   # EasyBuild CMake chokes on MacPorts
-$PORT install -f python34 +readline configure.compiler=macports-gcc-4.9 configure.objc=clang
-$PORT install boost +python34 configure.compiler=macports-gcc-4.9
-$PORT select --set python python34
-#$PORT install py34-cython configure.compiler=macports-gcc-4.9
-#$PORT select --set cython cython34
-#$PORT install py34-numpy +gcc49
+$PORT install boost configure.compiler=macports-gcc-4.9
 $PORT install xz
+
+# Python
+$PORT install -f python34 +readline configure.compiler=macports-gcc-4.9 configure.objc=clang
+$PORT select --set python python34
+$PORT install py34-cython configure.compiler=macports-gcc-4.9
+$PORT select --set cython cython34
+
+$PORT install py34-numpy +gcc49
+$PORT -f install py34-scipy +gcc49
+
+$PORT -f install py34-pip
+
+$PORT -f install py34-gobject3
+$PORT -f install py34-tz
+$PORT -f install py34-cffi
+
+# Put this in a virtualenv in $MACPORTS/pyenv
+# Do NOT mix pip and port installs
+# $PIP install cairocffi
+
+$PORT -f install py34-matplotlib +cairo +latex +pdftops +ghostscript +webagg
+$PORT -f install geos configure.compiler=macports-gcc-4.9
+$PORT -f install py34-matplotlib-basemap py34-pyproj
 
 
