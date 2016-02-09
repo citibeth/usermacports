@@ -1,0 +1,24 @@
+easyblock = 'CMakeMake'
+
+name = 'netCDF-C++4'
+version = 'ecdf914'   # Latest release lacks close() method
+
+homepage = 'http://www.unidata.ucar.edu/software/netcdf/'
+description = """NetCDF (network Common Data Form) is a set of software libraries 
+ and machine-independent data formats that support the creation, access, and sharing of array-oriented 
+ scientific data."""
+
+toolchain = {'name': 'mpgompi', 'version': '4.9.3'}
+toolchainopts = {'pic': True}
+
+sources = [SOURCE_TAR_GZ]
+source_urls = ['https://github.com/Unidata/netcdf-cxx4/tarball/%(version)s']
+
+dependencies = [('netCDF', '4.3.2')]
+
+sanity_check_paths = {
+    'files': ['include/netcdf', 'lib/libnetcdf-cxx4.' + SHLIB_EXT],
+    'dirs': [],
+}
+
+moduleclass = 'data'
