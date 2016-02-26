@@ -34,12 +34,12 @@ $PORT install cmake   # EasyBuild CMake chokes on MacPorts
 
 # Boost requires SOME python.  If you don't give it python34, it will install
 # its own python27.
-$PORT install -f python34 +readline configure.compiler=macports-gcc-4.9 # configure.objc=clang
+$PORT install -f python34 +readline #configure.compiler=macports-gcc-4.9 # configure.objc=clang
+$PORT select --set python python34
 $PORT install boost +python34 configure.compiler=macports-gcc-4.9
 $PORT install xz
 
 # Python
-$PORT select --set python python34
 $PORT install py34-cython configure.compiler=macports-gcc-4.9
 $PORT select --set cython cython34
 
