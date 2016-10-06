@@ -19,5 +19,5 @@
     export PATH=$MACPORTS/bin:$PATH
     ```
 
-5. Run one of the scripts in ```setup/``` to fill your new MacPorts installation with stuff.  The script sets its own ```MACPORTS``` variable, and that is what it will fill with software.  Edit if needed.
-
+5. Install stuff in your new Macports directory; just use `port
+   install` without the `sudo`.
