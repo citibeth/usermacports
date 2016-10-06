@@ -1,3 +1,8 @@
+Usermacports is a simple, easy-to-use script that sets up a blank MacPorts
+directory for you *without* requiring administrator/root access.  It
+does so by automating the task of building and installing MacPorts
+from source.
+
 # Instructions
 
 1. Download latest MacPorts srce (.tar.gz version) to ~/Downloads: https://www.macports.org/install.php#source
