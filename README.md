@@ -24,5 +24,13 @@ from source.
     export PATH=$MACPORTS/bin:$PATH
     ```
 
+1. Edit ```$MACPORTS/etc/macports/macports.conf```:
+   ```
+   # https://trac.macports.org/ticket/56563
+   # Hfscompression only works if installing in default /opt location
+   hfscompression      	no
+   ```
+
 5. Install stuff in your new Macports directory; just use `port
    install` without the `sudo`.
+
